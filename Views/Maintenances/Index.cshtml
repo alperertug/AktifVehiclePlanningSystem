@@ -1,0 +1,65 @@
+﻿@model IEnumerable<Entities.Concrete.Maintenance>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.CarId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.LastMaintenanceTime)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.LastMaintenanceMileage)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.WorkDone)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.NextMaintenanceTime)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.NextMaintenanceMileage)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.CarId)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.LastMaintenanceTime)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.LastMaintenanceMileage)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.WorkDone)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.NextMaintenanceTime)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.NextMaintenanceMileage)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
