@@ -1,5 +1,8 @@
 using AktifVehiclePlanningSystem.Areas.Identity.Data;
+using AktifVehiclePlanningSystem.Core;
 using AktifVehiclePlanningSystem.Data;
+using AktifVehiclePlanningSystem.Repositories;
+using Core.Constants;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -21,6 +24,8 @@ builder.Services.AddControllersWithViews();
 AddAuthorizationPolicies(builder.Services);
 
 #endregion
+
+AddScoped();
 
 
 var app = builder.Build();
@@ -62,7 +67,14 @@ void AddAuthorizationPolicies(IServiceCollection services)
 
     builder.Services.AddAuthorization(options =>
     {
-        options.AddPolicy("RequireAdmin", policy => policy.RequireRole("Administrator"));
-        options.AddPolicy("RequireManager", policy => policy.RequireRole("Manager"));
+        options.AddPolicy(Constants.Policies.RequireAdmin, policy => policy.RequireRole(Constants.Roles.Administrator));
+        options.AddPolicy(Constants.Policies.RequireManager, policy => policy.RequireRole(Constants.Roles.Manager));
     });
+}
+
+void AddScoped()
+{
+    builder.Services.AddScoped<IUserRepository, UserRepository>();
+    builder.Services.AddScoped<IRoleRepository, RoleRepository>();
+    builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 }

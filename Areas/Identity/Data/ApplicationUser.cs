@@ -8,4 +8,9 @@ namespace AktifVehiclePlanningSystem.Areas.Identity.Data
         public string FirstName { get; set; }
         public string LastName { get; set; }
     }
+
+    public class ApplicationRole : IdentityRole
+    {
+
+    }
 }
