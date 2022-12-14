@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
+﻿using Core.Constants;
+using DataAccess.Context;
 using Entities.Concrete;
-using AktifVehiclePlanningSystem.Data;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace AktifVehiclePlanningSystem.Controllers
 {
@@ -20,9 +17,10 @@ namespace AktifVehiclePlanningSystem.Controllers
         }
 
         // GET: Brands
+        [Authorize(Policy = Constants.Policies.RequireManager)]
         public async Task<IActionResult> Index()
         {
-              return View(await _context.Brands.ToListAsync());
+            return View(await _context.Brands.ToListAsync());
         }
 
         // GET: Brands/Details/5
@@ -148,14 +146,14 @@ namespace AktifVehiclePlanningSystem.Controllers
             {
                 _context.Brands.Remove(brand);
             }
-            
+
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
         private bool BrandExists(int id)
         {
-          return _context.Brands.Any(e => e.Id == id);
+            return _context.Brands.Any(e => e.Id == id);
         }
     }
 }

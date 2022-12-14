@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Core.Constants;
+using DataAccess.Context;
+using Entities.Concrete;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using Entities.Concrete;
-using AktifVehiclePlanningSystem.Data;
 
 namespace AktifVehiclePlanningSystem.Controllers
 {
@@ -20,9 +18,11 @@ namespace AktifVehiclePlanningSystem.Controllers
         }
 
         // GET: Maintenances
+        [Authorize(Policy = Constants.Policies.RequireManager)]
         public async Task<IActionResult> Index()
         {
-              return View(await _context.Maintenances.ToListAsync());
+            var applicationDbContext = _context.Maintenances.Include(m => m.Car);
+            return View(await applicationDbContext.ToListAsync());
         }
 
         // GET: Maintenances/Details/5
@@ -34,6 +34,7 @@ namespace AktifVehiclePlanningSystem.Controllers
             }
 
             var maintenance = await _context.Maintenances
+                .Include(m => m.Car)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (maintenance == null)
             {
@@ -46,6 +47,7 @@ namespace AktifVehiclePlanningSystem.Controllers
         // GET: Maintenances/Create
         public IActionResult Create()
         {
+            ViewData["CarId"] = new SelectList(_context.Cars, "Id", "Plate");
             return View();
         }
 
@@ -54,7 +56,7 @@ namespace AktifVehiclePlanningSystem.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,CarId,LastMaintenanceTime,LastMaintenanceMileage,WorkDone,NextMaintenanceTime,NextMaintenanceMileage")] Maintenance maintenance)
+        public async Task<IActionResult> Create([Bind("CarId,Title,LastMaintenanceTime,LastMaintenanceMileage,WorkDone,NextMaintenanceTime,NextMaintenanceMileage,Id,CreatedBy,ModifiedBy,DeletedBy,CreatedDate,ModifiedDate,DeletedDate,IsDeleted")] Maintenance maintenance)
         {
             if (ModelState.IsValid)
             {
@@ -62,6 +64,7 @@ namespace AktifVehiclePlanningSystem.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
+            ViewData["CarId"] = new SelectList(_context.Cars, "Id", "Plate", maintenance.CarId);
             return View(maintenance);
         }
 
@@ -78,6 +81,7 @@ namespace AktifVehiclePlanningSystem.Controllers
             {
                 return NotFound();
             }
+            ViewData["CarId"] = new SelectList(_context.Cars, "Id", "Plate", maintenance.CarId);
             return View(maintenance);
         }
 
@@ -86,7 +90,7 @@ namespace AktifVehiclePlanningSystem.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,CarId,LastMaintenanceTime,LastMaintenanceMileage,WorkDone,NextMaintenanceTime,NextMaintenanceMileage")] Maintenance maintenance)
+        public async Task<IActionResult> Edit(int id, [Bind("CarId,Title,LastMaintenanceTime,LastMaintenanceMileage,WorkDone,NextMaintenanceTime,NextMaintenanceMileage,Id,CreatedBy,ModifiedBy,DeletedBy,CreatedDate,ModifiedDate,DeletedDate,IsDeleted")] Maintenance maintenance)
         {
             if (id != maintenance.Id)
             {
@@ -113,6 +117,7 @@ namespace AktifVehiclePlanningSystem.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
+            ViewData["CarId"] = new SelectList(_context.Cars, "Id", "Plate", maintenance.CarId);
             return View(maintenance);
         }
 
@@ -125,6 +130,7 @@ namespace AktifVehiclePlanningSystem.Controllers
             }
 
             var maintenance = await _context.Maintenances
+                .Include(m => m.Car)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (maintenance == null)
             {
@@ -148,14 +154,14 @@ namespace AktifVehiclePlanningSystem.Controllers
             {
                 _context.Maintenances.Remove(maintenance);
             }
-            
+
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
         private bool MaintenanceExists(int id)
         {
-          return _context.Maintenances.Any(e => e.Id == id);
+            return _context.Maintenances.Any(e => e.Id == id);
         }
     }
 }

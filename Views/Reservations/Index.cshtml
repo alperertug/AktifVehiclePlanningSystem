@@ -1,0 +1,120 @@
+﻿@model IEnumerable<Entities.Concrete.Reservation>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Reservations</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.UserId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Car)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ReservationDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DeliveryTime)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ReasonForReservation)
+            </th>
+            @*<th>
+                @Html.DisplayNameFor(model => model.CreatedBy)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ModifiedBy)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DeletedBy)
+            </th>*@
+            <th>
+                @Html.DisplayNameFor(model => model.CreatedDate)
+            </th>
+            @*<th>
+                @Html.DisplayNameFor(model => model.ModifiedDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DeletedDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.IsDeleted)
+            </th>*@
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.UserId)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Car.Plate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ReservationDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DeliveryTime)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ReasonForReservation.Reason)
+            </td>
+            @*<td>
+                @Html.DisplayFor(modelItem => item.CreatedBy)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ModifiedBy)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DeletedBy)
+            </td>*@
+            <td>
+                @Html.DisplayFor(modelItem => item.CreatedDate)
+            </td>
+            @*<td>
+                @Html.DisplayFor(modelItem => item.ModifiedDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DeletedDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.IsDeleted)
+            </td>*@
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
+
+
+@{
+    bool checkRole = false;
+}
+
+@if (User.IsInRole("Administrator"))
+{
+    <p>
+        <a asp-controller="RoleViews" asp-action="Admin">Back to the Admin Page</a>
+    </p>
+    checkRole = true;
+}
+@if (User.IsInRole("Manager") && checkRole == false)
+{
+    <p>
+        <a asp-controller="RoleViews" asp-action="Manager">Back to the Manager Page</a>
+    </p>
+}

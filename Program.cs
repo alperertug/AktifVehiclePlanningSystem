@@ -1,8 +1,9 @@
-using AktifVehiclePlanningSystem.Areas.Identity.Data;
 using AktifVehiclePlanningSystem.Core;
 using AktifVehiclePlanningSystem.Data;
 using AktifVehiclePlanningSystem.Repositories;
 using Core.Constants;
+using DataAccess.Context;
+using DataAccess.Identity.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -18,6 +19,10 @@ builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.R
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
 builder.Services.AddControllersWithViews();
+
+//builder.Services.AddControllersWithViews().AddRazorPagesOptions(options => {
+//    options.Conventions.AddAreaPageRoute("Identity", "/Account/Login", "");
+//});
 
 #region Authorization
 
@@ -50,9 +55,16 @@ app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapControllerRoute(
-    name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapAreaControllerRoute(
+        name: "Admin",
+        areaName: "Admin",
+        pattern: "Admin/{controller=Home}/{action=Index}/{id?}"
+        );
+    endpoints.MapDefaultControllerRoute();
+});
+
 app.MapRazorPages();
 
 app.Run();

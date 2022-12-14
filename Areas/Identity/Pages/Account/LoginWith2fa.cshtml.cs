@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
-using AktifVehiclePlanningSystem.Areas.Identity.Data;
+using DataAccess.Identity.Data;
 
 namespace AktifVehiclePlanningSystem.Areas.Identity.Pages.Account
 {

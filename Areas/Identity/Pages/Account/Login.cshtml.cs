@@ -17,7 +17,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using System.Security.Claims;
 using NuGet.Packaging;
-using AktifVehiclePlanningSystem.Areas.Identity.Data;
+using DataAccess.Identity.Data;
 
 namespace AktifVehiclePlanningSystem.Areas.Identity.Pages.Account
 {

@@ -1,28 +1,29 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Core.Constants;
+using DataAccess.Context;
+using Entities.Concrete;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using Entities.Concrete;
-using AktifVehiclePlanningSystem.Data;
 
 namespace AktifVehiclePlanningSystem.Controllers
 {
     public class CarsController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly IWebHostEnvironment _hostEnvironment;
 
-        public CarsController(ApplicationDbContext context)
+        public CarsController(ApplicationDbContext context, IWebHostEnvironment hostEnvironment)
         {
             _context = context;
+            _hostEnvironment = hostEnvironment;
         }
 
         // GET: Cars
+        [Authorize(Policy = Constants.Policies.RequireManager)]
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.Cars.Include(c => c.Brand).Include(c => c.Color);
+            var applicationDbContext = _context.Cars.Include(c => c.Color).Include(c => c.Model);
             return View(await applicationDbContext.ToListAsync());
         }
 
@@ -35,8 +36,8 @@ namespace AktifVehiclePlanningSystem.Controllers
             }
 
             var car = await _context.Cars
-                .Include(c => c.Brand)
                 .Include(c => c.Color)
+                .Include(c => c.Model)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (car == null)
             {
@@ -49,8 +50,8 @@ namespace AktifVehiclePlanningSystem.Controllers
         // GET: Cars/Create
         public IActionResult Create()
         {
-            ViewData["BrandId"] = new SelectList(_context.Brands, "Id", "BrandName");
             ViewData["ColorId"] = new SelectList(_context.Colors, "Id", "ColorName");
+            ViewData["ModelId"] = new SelectList(_context.Models, "Id", "ModelName");
             return View();
         }
 
@@ -59,16 +60,27 @@ namespace AktifVehiclePlanningSystem.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,BrandId,ColorId,Model,Plate,ProductionYear,PersonCapacity,LoadLimit,MaintenanceId")] Car car)
+        public async Task<IActionResult> Create([Bind("Plate,ModelId,ColorId,ProductionYear,PersonCapacity,LoadLimit,Title,ImageFile,Id,CreatedBy,ModifiedBy,DeletedBy,CreatedDate,ModifiedDate,DeletedDate,IsDeleted")] Car car)
         {
             if (ModelState.IsValid)
             {
+                string wwwRootPath = _hostEnvironment.WebRootPath;
+                string fileName = Path.GetFileNameWithoutExtension(car.ImageFile.FileName);
+                string extension = Path.GetExtension(car.ImageFile.FileName);
+                car.ImageName = fileName = fileName + DateTime.Now.ToString("yymmssfff") + extension;
+                string path = Path.Combine(wwwRootPath + "/Image/", fileName);
+                using (var fileStream = new FileStream(path, FileMode.Create))
+                {
+                    await car.ImageFile.CopyToAsync(fileStream);
+                }
+
+
                 _context.Add(car);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["BrandId"] = new SelectList(_context.Brands, "Id", "BrandName", car.BrandId);
             ViewData["ColorId"] = new SelectList(_context.Colors, "Id", "ColorName", car.ColorId);
+            ViewData["ModelId"] = new SelectList(_context.Models, "Id", "ModelName", car.ModelId);
             return View(car);
         }
 
@@ -85,8 +97,8 @@ namespace AktifVehiclePlanningSystem.Controllers
             {
                 return NotFound();
             }
-            ViewData["BrandId"] = new SelectList(_context.Brands, "Id", "BrandName", car.BrandId);
             ViewData["ColorId"] = new SelectList(_context.Colors, "Id", "ColorName", car.ColorId);
+            ViewData["ModelId"] = new SelectList(_context.Models, "Id", "ModelName", car.ModelId);
             return View(car);
         }
 
@@ -95,23 +107,44 @@ namespace AktifVehiclePlanningSystem.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,BrandId,ColorId,Model,Plate,ProductionYear,PersonCapacity,LoadLimit,MaintenanceId")] Car car)
+        public async Task<IActionResult> Edit(int id, [Bind("Plate,ModelId,ColorId,ProductionYear,PersonCapacity,LoadLimit,Title,ImageFile,Id,CreatedBy,ModifiedBy,DeletedBy,CreatedDate,ModifiedDate,DeletedDate,IsDeleted")] Car carToUpdate)
         {
-            if (id != car.Id)
+            Car carInDb = _context.Cars.Find(id);
+
+            if (id != carInDb.Id)
             {
                 return NotFound();
             }
 
             if (ModelState.IsValid)
             {
+                DeleteCustom(id);
                 try
                 {
-                    _context.Update(car);
+                    string wwwRootPath = _hostEnvironment.WebRootPath;
+                    string fileName = Path.GetFileNameWithoutExtension(carToUpdate.ImageFile.FileName);
+                    string extension = Path.GetExtension(carToUpdate.ImageFile.FileName);
+                    carToUpdate.ImageName = fileName = fileName + DateTime.Now.ToString("yymmssfff") + extension;
+                    string path = Path.Combine(wwwRootPath + "/Image/", fileName);
+                    using (var fileStream = new FileStream(path, FileMode.Create))
+                    {
+                        await carToUpdate.ImageFile.CopyToAsync(fileStream);
+                    }
+
+                    carInDb.Plate = carToUpdate.Plate;
+                    carInDb.ModelId = carToUpdate.ModelId;
+                    carInDb.ColorId = carToUpdate.ColorId;
+                    carInDb.ProductionYear = carToUpdate.ProductionYear;
+                    carInDb.PersonCapacity = carToUpdate.PersonCapacity;
+                    carInDb.LoadLimit = carToUpdate.LoadLimit;
+                    carInDb.Title = carToUpdate.Title;
+                    carInDb.ImageName = carToUpdate.ImageName;
+                    _context.Update(carInDb);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!CarExists(car.Id))
+                    if (!CarExists(carToUpdate.Id))
                     {
                         return NotFound();
                     }
@@ -122,9 +155,9 @@ namespace AktifVehiclePlanningSystem.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["BrandId"] = new SelectList(_context.Brands, "Id", "BrandName", car.BrandId);
-            ViewData["ColorId"] = new SelectList(_context.Colors, "Id", "ColorName", car.ColorId);
-            return View(car);
+            ViewData["ColorId"] = new SelectList(_context.Colors, "Id", "ColorName", carInDb.ColorId);
+            ViewData["ModelId"] = new SelectList(_context.Models, "Id", "ModelName", carInDb.ModelId);
+            return View(carInDb);
         }
 
         // GET: Cars/Delete/5
@@ -136,8 +169,8 @@ namespace AktifVehiclePlanningSystem.Controllers
             }
 
             var car = await _context.Cars
-                .Include(c => c.Brand)
                 .Include(c => c.Color)
+                .Include(c => c.Model)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (car == null)
             {
@@ -159,16 +192,41 @@ namespace AktifVehiclePlanningSystem.Controllers
             var car = await _context.Cars.FindAsync(id);
             if (car != null)
             {
+                var imagePath = Path.Combine(_hostEnvironment.WebRootPath, "image", car.ImageName);
+                if (System.IO.File.Exists(imagePath))
+                {
+                    System.IO.File.Delete(imagePath);
+                }
                 _context.Cars.Remove(car);
             }
-            
+
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
+        private void DeleteCustom(int id)
+        {
+            //if (_context.Cars == null)
+            //{
+            //    return Problem("Entity set 'ApplicationDbContext.Cars'  is null.");
+            //}
+            Car car = _context.Cars.Find(id);
+
+            if (car != null)
+            {
+                var imagePath = Path.Combine(_hostEnvironment.WebRootPath, "image", car.ImageName);
+                if (System.IO.File.Exists(imagePath))
+                {
+                    System.IO.File.Delete(imagePath);
+                }
+
+            }
+
+        }
+
         private bool CarExists(int id)
         {
-          return _context.Cars.Any(e => e.Id == id);
+            return _context.Cars.Any(e => e.Id == id);
         }
     }
 }

@@ -1,6 +1,7 @@
-﻿using AktifVehiclePlanningSystem.Areas.Identity.Data;
-using AktifVehiclePlanningSystem.Core;
+﻿using AktifVehiclePlanningSystem.Core;
 using AktifVehiclePlanningSystem.Core.ViewModels;
+using DataAccess.Identity.Data;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -17,6 +18,8 @@ namespace AktifVehiclePlanningSystem.Controllers
             _unitOfWork = unitOfWork;
             _signInManager = signInManager;
         }
+
+        [Authorize(Policy = "RequireAdmin")]
         public IActionResult Index()
         {
             var users = _unitOfWork.User.GetUsers();

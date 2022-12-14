@@ -4,7 +4,7 @@
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
+<h1>Vehicles</h1>
 
 <p>
     <a asp-action="Create">Create New</a>
@@ -13,16 +13,13 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Brand)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Color)
+                @Html.DisplayNameFor(model => model.Plate)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Model)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Plate)
+                @Html.DisplayNameFor(model => model.Color)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.ProductionYear)
@@ -34,44 +31,60 @@
                 @Html.DisplayNameFor(model => model.LoadLimit)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.MaintenanceId)
+                @Html.DisplayNameFor(model => model.CreatedDate)
             </th>
             <th></th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Brand.BrandName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Color.ColorName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Model)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Plate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ProductionYear)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.PersonCapacity)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.LoadLimit)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.MaintenanceId)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
-}
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Plate)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Model.ModelName)                    
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Color.ColorName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ProductionYear)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.PersonCapacity)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.LoadLimit)
+                </td>                
+                <td>
+                    @Html.DisplayFor(modelItem => item.CreatedDate)
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a>
+                    <a asp-action="Details" asp-route-id="@item.Id">Details</a>
+                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                </td>                
+            </tr>
+        }
     </tbody>
 </table>
+
+@{
+    bool checkRole = false;
+}
+
+@if (User.IsInRole("Administrator"))
+{
+    <p>
+        <a asp-controller="RoleViews" asp-action="Admin">Back to the Admin Page</a>
+    </p>
+    checkRole = true;
+}
+@if (User.IsInRole("Manager") && checkRole == false)
+{
+    <p>
+        <a asp-controller="RoleViews" asp-action="Manager">Back to the Manager Page</a>
+    </p>
+}

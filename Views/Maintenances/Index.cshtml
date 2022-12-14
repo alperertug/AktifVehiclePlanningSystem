@@ -4,7 +4,7 @@
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
+<h1>Maintenances</h1>
 
 <p>
     <a asp-action="Create">Create New</a>
@@ -13,7 +13,7 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.CarId)
+                @Html.DisplayNameFor(model => model.Title)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.LastMaintenanceTime)
@@ -30,6 +30,30 @@
             <th>
                 @Html.DisplayNameFor(model => model.NextMaintenanceMileage)
             </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Car)
+            </th>
+            @*<th>
+                @Html.DisplayNameFor(model => model.CreatedBy)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ModifiedBy)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DeletedBy)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CreatedDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ModifiedDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DeletedDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.IsDeleted)
+            </th>*@
             <th></th>
         </tr>
     </thead>
@@ -37,7 +61,7 @@
 @foreach (var item in Model) {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.CarId)
+                @Html.DisplayFor(modelItem => item.Title)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.LastMaintenanceTime)
@@ -55,6 +79,30 @@
                 @Html.DisplayFor(modelItem => item.NextMaintenanceMileage)
             </td>
             <td>
+                @Html.DisplayFor(modelItem => item.Car.Plate)
+            </td>
+            @*<td>
+                @Html.DisplayFor(modelItem => item.CreatedBy)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ModifiedBy)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DeletedBy)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CreatedDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ModifiedDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DeletedDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.IsDeleted)
+            </td>*@
+            <td>
                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
                 <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
                 <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
@@ -63,3 +111,21 @@
 }
     </tbody>
 </table>
+
+@{
+    bool checkRole = false;
+}
+
+@if (User.IsInRole("Administrator"))
+{
+    <p>
+        <a asp-controller="RoleViews" asp-action="Admin">Back to the Admin Page</a>
+    </p>
+    checkRole = true;
+}
+@if (User.IsInRole("Manager") && checkRole == false)
+{
+    <p>
+        <a asp-controller="RoleViews" asp-action="Manager">Back to the Manager Page</a>
+    </p>
+}

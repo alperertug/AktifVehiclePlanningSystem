@@ -1,6 +1,5 @@
-﻿using AktifVehiclePlanningSystem.Areas.Identity.Data;
-using AktifVehiclePlanningSystem.Core;
-using AktifVehiclePlanningSystem.Data;
+﻿using AktifVehiclePlanningSystem.Core;
+using DataAccess.Context;
 using Microsoft.AspNetCore.Identity;
 
 namespace AktifVehiclePlanningSystem.Repositories

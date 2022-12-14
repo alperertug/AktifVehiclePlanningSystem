@@ -1,5 +1,4 @@
-﻿using AktifVehiclePlanningSystem.Areas.Identity.Data;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 
 namespace AktifVehiclePlanningSystem.Core
 {

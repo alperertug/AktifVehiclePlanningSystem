@@ -4,7 +4,7 @@
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
+<h1>Colors</h1>
 
 <p>
     <a asp-action="Create">Create New</a>
@@ -33,3 +33,22 @@
 }
     </tbody>
 </table>
+
+
+@{
+    bool checkRole = false;
+}
+
+@if (User.IsInRole("Administrator"))
+{
+    <p>
+        <a asp-controller="RoleViews" asp-action="Admin">Back to the Admin Page</a>
+    </p>
+    checkRole = true;
+}
+@if (User.IsInRole("Manager") && checkRole == false)
+{
+    <p>
+        <a asp-controller="RoleViews" asp-action="Manager">Back to the Manager Page</a>
+    </p>
+}

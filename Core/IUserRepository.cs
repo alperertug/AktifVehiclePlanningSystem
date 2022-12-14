@@ -1,4 +1,4 @@
-﻿using AktifVehiclePlanningSystem.Areas.Identity.Data;
+﻿using DataAccess.Identity.Data;
 
 namespace AktifVehiclePlanningSystem.Core
 {

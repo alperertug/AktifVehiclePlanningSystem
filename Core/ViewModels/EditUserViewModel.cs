@@ -1,4 +1,4 @@
-﻿using AktifVehiclePlanningSystem.Areas.Identity.Data;
+﻿using DataAccess.Identity.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
